@@ -10,6 +10,7 @@ import pages.LetCarWorkPage;
 import pages.LoginPage;
 import pages.SearchPage;
 import utils.Fuel;
+import utils.RetryAnalyzer;
 
 import java.util.Random;
 
@@ -35,7 +36,7 @@ public class AddNewCarTests extends ApplicationManager {
             System.out.println("Something went wrong");
     }
 
-    @Test
+    @Test(retryAnalyzer = RetryAnalyzer.class, invocationCount = 2)
     public void addNewCarPositiveTest() {
         CarDto car = CarDto.builder()
                 .serialNumber(new Random().nextInt(1000) + "-055")
@@ -54,6 +55,24 @@ public class AddNewCarTests extends ApplicationManager {
         Assert.assertTrue(letCarWorkPage
                 .isPopUpMessagePresent(car.getManufacture() + " " + car.getModel() + " " + "added successful"));
 
+    }
+    @Test//(retryAnalyzer = RetryAnalyzer.class, invocationCount = 2)
+    public void addNewCarNegativeTest_WOMake() {
+        CarDto car = CarDto.builder()
+                .serialNumber(new Random().nextInt(1000) + "-055")
+                .city("Haifa")
+                .manufacture("")
+                .model("CX-90")
+                .year("2022")
+                .fuel(Fuel.HYBRID.getLocator())
+                .seats(4)
+                .carClass("A")
+                .pricePerDay(123.99)
+                .about("About my car")
+                .build();
+        letCarWorkPage = new LetCarWorkPage(getDriver());
+        letCarWorkPage.typeLetCarWorkForm(car);
+        Assert.assertTrue(letCarWorkPage.isElementPresentDOM("//*[text()=' Make is required ']", 5));
     }
 
 }
