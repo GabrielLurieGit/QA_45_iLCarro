@@ -4,9 +4,13 @@ import dto.UserDtoLombok;
 import manager.ApplicationManager;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import pages.LoginPage;
 import pages.SearchPage;
+import utils.TestNGListener;
+
+@Listeners(TestNGListener.class)
 
 public class LoginTests extends ApplicationManager {
 

@@ -3,11 +3,15 @@ package tests;
 import dto.UserDtoLombok;
 import manager.ApplicationManager;
 import org.testng.Assert;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import pages.RegistrationPage;
 import pages.SearchPage;
+import utils.TestNGListener;
 
 import java.util.Random;
+
+@Listeners(TestNGListener.class)
 
 public class RegistrationTests extends ApplicationManager {
 
