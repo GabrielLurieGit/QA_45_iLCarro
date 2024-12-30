@@ -1,5 +1,6 @@
 package tests;
 
+import data_providers.CarDP;
 import dto.CarDto;
 import dto.UserDtoLombok;
 import manager.ApplicationManager;
@@ -56,6 +57,15 @@ public class AddNewCarTests extends ApplicationManager {
                 .isPopUpMessagePresent(car.getManufacture() + " " + car.getModel() + " " + "added successful"));
 
     }
+
+    @Test(dataProvider = "dataProviderCarFile", dataProviderClass = CarDP.class)
+    public void addNewCarPositiveTestDP(CarDto car) {
+        letCarWorkPage = new LetCarWorkPage(getDriver());
+        letCarWorkPage.typeLetCarWorkForm(car);
+        Assert.assertTrue(letCarWorkPage
+                .isPopUpMessagePresent(car.getManufacture() + " " + car.getModel() + " " + "added successful"));
+    }
+
     @Test//(retryAnalyzer = RetryAnalyzer.class, invocationCount = 2)
     public void addNewCarNegativeTest_WOMake() {
         CarDto car = CarDto.builder()
