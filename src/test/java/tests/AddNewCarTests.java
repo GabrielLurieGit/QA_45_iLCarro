@@ -18,6 +18,8 @@ import utils.TestNGListener;
 import java.lang.reflect.Method;
 import java.util.Random;
 
+import static utils.PropertiesReader.*;
+
 @Listeners(TestNGListener.class)
 
 public class AddNewCarTests extends ApplicationManager {
@@ -26,9 +28,13 @@ public class AddNewCarTests extends ApplicationManager {
 
     @BeforeMethod
     public void login() {
+//        UserDtoLombok user = UserDtoLombok.builder()
+//                .email("alexmed123@gmail.com")
+//                .password("Qwerty123!")
+//                .build();
         UserDtoLombok user = UserDtoLombok.builder()
-                .email("alexmed123@gmail.com")
-                .password("Qwerty123!")
+                .email(getProperty("login.properties", "email"))
+                .password(getProperty("login.properties", "password"))
                 .build();
         new SearchPage(getDriver()).clickBtnLogin();
         loginPage = new LoginPage(getDriver());
@@ -65,6 +71,15 @@ public class AddNewCarTests extends ApplicationManager {
 
     @Test(dataProvider = "dataProviderCarFile", dataProviderClass = CarDP.class)
     public void addNewCarPositiveTestDP(CarDto car, Method method) {
+        logger.info(method.getName() + " start with data --> " + car.toString());
+        letCarWorkPage = new LetCarWorkPage(getDriver());
+        letCarWorkPage.typeLetCarWorkForm(car);
+        Assert.assertTrue(letCarWorkPage
+                .isPopUpMessagePresent(car.getManufacture() + " " + car.getModel() + " " + "added successful"));
+    }
+
+    @Test(dataProvider = "dataProviderCarFileProperties", dataProviderClass = CarDP.class)
+    public void addNewCarPositiveTestDPProperties(CarDto car, Method method) {
         logger.info(method.getName() + " start with data --> " + car.toString());
         letCarWorkPage = new LetCarWorkPage(getDriver());
         letCarWorkPage.typeLetCarWorkForm(car);
