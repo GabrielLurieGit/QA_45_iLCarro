@@ -24,7 +24,7 @@ public class LoginTests extends ApplicationManager {
     @Test
     public void loginPositiveTest(){
         UserDtoLombok user = UserDtoLombok.builder()
-                .email("alexmed123@gmail.com")
+                .username("alexmed123@gmail.com")
                 .password("Qwerty123!")
                 .build();
         loginPage = new LoginPage(getDriver());
@@ -36,7 +36,7 @@ public class LoginTests extends ApplicationManager {
     @Test
     public void loginNegativeTest_wrongEmail(){
         UserDtoLombok user = UserDtoLombok.builder()
-                .email("alexmed123gmail.com")
+                .username("alexmed123gmail.com")
                 .password("Qwerty123!")
                 .build();
         loginPage = new LoginPage(getDriver());
@@ -48,7 +48,7 @@ public class LoginTests extends ApplicationManager {
     @Test
     public void loginNegativeTest_emptyPassword(){
         UserDtoLombok user = UserDtoLombok.builder()
-                .email("alexmed123@gmail.com")
+                .username("alexmed123@gmail.com")
                 .password("")
                 .build();
         loginPage = new LoginPage(getDriver());

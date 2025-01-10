@@ -33,7 +33,7 @@ public class AddNewCarTests extends ApplicationManager {
 //                .password("Qwerty123!")
 //                .build();
         UserDtoLombok user = UserDtoLombok.builder()
-                .email(getProperty("login.properties", "email"))
+                .username(getProperty("login.properties", "email"))
                 .password(getProperty("login.properties", "password"))
                 .build();
         new SearchPage(getDriver()).clickBtnLogin();

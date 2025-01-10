@@ -21,9 +21,9 @@ public class RegistrationTests extends ApplicationManager {
     public void registrationPositiveTest(){
         int i  = new Random().nextInt(1000)+1000;
         UserDtoLombok user = UserDtoLombok.builder()
-                .name("Bob")
+                .firstName("Bob")
                 .lastName("Doe")
-                .email(i+"bob_mail@mail.com")
+                .username(i+"bob_mail@mail.com")
                 .password("Pass123!")
                 .build();
         new SearchPage(getDriver()).clickBtnSignUp();
@@ -39,9 +39,9 @@ public class RegistrationTests extends ApplicationManager {
     public void registrationNegativeTest_wrongEmail(){
         int i  = new Random().nextInt(1000)+1000;
         UserDtoLombok user = UserDtoLombok.builder()
-                .name("Bob")
+                .firstName("Bob")
                 .lastName("Doe")
-                .email(i+"bob_mail_mail.com")
+                .username(i+"bob_mail_mail.com")
                 .password("Pass123!")
                 .build();
         new SearchPage(getDriver()).clickBtnSignUp();
@@ -56,9 +56,9 @@ public class RegistrationTests extends ApplicationManager {
     public void registrationNegativeTest_EmptyLastName(){
         int i  = new Random().nextInt(1000)+1000;
         UserDtoLombok user = UserDtoLombok.builder()
-                .name("Bob")
+                .firstName("Bob")
                 .lastName("")
-                .email(i+"bob_mail@mail.com")
+                .username(i+"bob_mail@mail.com")
                 .password("Pass123!")
                 .build();
         new SearchPage(getDriver()).clickBtnSignUp();
@@ -73,9 +73,9 @@ public class RegistrationTests extends ApplicationManager {
     public void registrationNegativeTest_LastNameSpace(){
         int i  = new Random().nextInt(1000)+1000;
         UserDtoLombok user = UserDtoLombok.builder()
-                .name("Bob")
+                .firstName("Bob")
                 .lastName(" ")
-                .email(i+"bob_mail@mail.com")
+                .username(i+"bob_mail@mail.com")
                 .password("Pass123!")
                 .build();
         new SearchPage(getDriver()).clickBtnSignUp();
@@ -89,9 +89,9 @@ public class RegistrationTests extends ApplicationManager {
     public void registrationNegativeTest_WOcheckBox(){
         int i  = new Random().nextInt(1000)+1000;
         UserDtoLombok user = UserDtoLombok.builder()
-                .name("Bob")
+                .firstName("Bob")
                 .lastName("Marly")
-                .email(i+"bob_mail@mail.com")
+                .username(i+"bob_mail@mail.com")
                 .password("Pass123!")
                 .build();
         new SearchPage(getDriver()).clickBtnSignUp();
