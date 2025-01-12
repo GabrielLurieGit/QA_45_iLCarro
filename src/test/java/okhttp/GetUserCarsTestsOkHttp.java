@@ -89,7 +89,10 @@ public class GetUserCarsTestsOkHttp implements BaseApi {
                ErrorMessageDtoString errorMessageDtoString =
                        GSON.fromJson(response.body().string(), ErrorMessageDtoString.class);
                 System.out.println(errorMessageDtoString.toString());
-
+                softAssert.assertEquals(errorMessageDtoString.getStatus(),401);
+                softAssert.assertTrue(errorMessageDtoString.getError().equals("Unauthorized"));
+                softAssert.assertTrue(errorMessageDtoString.getMessage().toString().contains("must contain exactly"));
+                softAssert.assertAll();
             }else {
                 ErrorMessageDtoString errorMessageDtoString =
                         GSON.fromJson(response.body().string(), ErrorMessageDtoString.class);
