@@ -10,6 +10,8 @@ public interface BaseApi {
     String LOGIN = "/v1/user/login/usernamepassword";
     String ADD_NEW_CAR = "/v1/cars";
     String AUTHORIZATION = "Authorization";
+    String GET_USER_CARS = "/v1/cars/my";
+    String DELETE_CAR_BY_ID = "/v1/cars/";
 
     Gson GSON = new Gson();
     MediaType JSON = MediaType.get("application/json");

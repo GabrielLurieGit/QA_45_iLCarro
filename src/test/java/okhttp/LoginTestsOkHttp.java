@@ -1,6 +1,7 @@
 package okhttp;
 
 import dto.UserDtoLombok;
+import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -62,7 +63,7 @@ public class LoginTestsOkHttp implements BaseApi {
                 .username("1897bob_mail@mail.com")
                 .password("Pass123!")
                 .build();
-        RequestBody requestBody = RequestBody.create("Invalid JSON",JSON);
+        RequestBody requestBody = RequestBody.create(GSON.toJson(user), MediaType.parse("text/plain"));
         Request request = new Request.Builder()
                 .url(BASE_URL+LOGIN)
                 .post(requestBody)

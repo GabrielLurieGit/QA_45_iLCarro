@@ -3,6 +3,7 @@ package okhttp;
 import dto.ErrorMessageDtoString;
 import dto.TokenDto;
 import dto.UserDtoLombok;
+import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -76,30 +77,43 @@ public class RegistrationTestsOkHttp implements BaseApi {
 
 
     @Test
-    public void registrationNegativeTest_InvalidBodyFormat(){
+    public void registrationNegativeTest_InvalidContentType(){
         UserDtoLombok user = UserDtoLombok.builder()
                 .username("bob_mail@mail.com")
                 .password("Pass123!")
                 .firstName("Bob")
                 .lastName("Doe")
                 .build();
-        RequestBody requestBody = RequestBody.create("Invalid JSON",JSON);
+        RequestBody requestBody =
+                RequestBody.create(GSON.toJson(user), MediaType.parse("text/plain")); // instead of JSON - text/plain
         Request request = new Request.Builder()
                 .url(BASE_URL+REGISTRATION)
                 .post(requestBody)
                 .build();
-        Response response;
-        try {
-           response = OK_HTTP_CLIENT.newCall(request).execute();
+
+        try (Response response = OK_HTTP_CLIENT.newCall(request).execute()){
+            if (!response.isSuccessful()){
+               ErrorMessageDtoString errorMessageDtoString =
+                       GSON.fromJson(response.body().string(), ErrorMessageDtoString.class);
+                System.out.println(errorMessageDtoString.toString());
+                softAssert.assertEquals(errorMessageDtoString.getStatus(),500);
+                softAssert.assertTrue(errorMessageDtoString.getError().equals("Internal Server Error"));
+                softAssert.assertTrue(errorMessageDtoString.getMessage().toString().contains("Content type"));
+                softAssert.assertAll();
+            }else {
+                ErrorMessageDtoString errorMessageDtoString =
+                        GSON.fromJson(response.body().string(), ErrorMessageDtoString.class);
+                System.out.println(errorMessageDtoString.toString());
+                Assert.fail("Invalid request -->" + response.code());
+            }
+
         } catch (IOException e) {
+            Assert.fail("Created exception!");
             throw new RuntimeException(e);
         }
-
-        System.out.println(response.toString());
-        Assert.assertEquals(response.code(),500);
     }
 
-    @Test
+    @Test   //403 HOW????
     public void registrationNegativeTest_WrongURL(){
         UserDtoLombok user = UserDtoLombok.builder()
                 .username("bob_mail@mail.com")
@@ -109,21 +123,27 @@ public class RegistrationTestsOkHttp implements BaseApi {
                 .build();
         RequestBody requestBody = RequestBody.create(GSON.toJson(user),JSON);
         Request request = new Request.Builder()
-                .url(BASE_URL+"/invalid_endpoint")
+                .url(BASE_URL+"/invalid_endpoint") // url is broken
                 .post(requestBody)
                 .build();
-        Response response;
-        try {
-            response = OK_HTTP_CLIENT.newCall(request).execute();
+
+        try (Response response = OK_HTTP_CLIENT.newCall(request).execute()){
+            if(!response.isSuccessful()){
+                System.out.println(response.toString());
+               softAssert.assertEquals(response.code(),403);
+               softAssert.assertAll();
+            }else {
+                softAssert.fail("wrong request, status code --> " + response.code());
+            }
+
         } catch (IOException e) {
+            softAssert.fail("created exception");
             throw new RuntimeException(e);
         }
-        System.out.println(response.toString());
-        Assert.assertEquals(response.code(),403);
     }
 
     @Test
-    public void registrationPositiveTestValidateToken(){
+    public void registrationPositiveTest_ValidateToken(){
         int i  = new Random().nextInt(1000)+1000;
         UserDtoLombok user = UserDtoLombok.builder()
                 .username(i+"bob_mail@mail.com")
@@ -157,7 +177,7 @@ public class RegistrationTestsOkHttp implements BaseApi {
     }
 
     @Test
-    public void registrationNegativeTest(){
+    public void registrationNegativeTest_InvalidPassword(){
         int i  = new Random().nextInt(1000)+1000;
         UserDtoLombok user = UserDtoLombok.builder()
                 .username(i+"bob_mail@mail.com")
@@ -187,12 +207,10 @@ public class RegistrationTestsOkHttp implements BaseApi {
                 System.out.println(errorMessageDtoString.toString());
                 Assert.fail("Invalid request -->"+response.code());
             }
-
         } catch (IOException e) {
             Assert.fail("Created exception");
             throw new RuntimeException(e);
         }
-
     }
 
 
