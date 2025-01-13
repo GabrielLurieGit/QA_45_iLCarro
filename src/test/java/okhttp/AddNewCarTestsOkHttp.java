@@ -19,7 +19,7 @@ import static utils.PropertiesReader.getProperty;
 public class AddNewCarTestsOkHttp implements BaseApi {
     TokenDto tokenDto;
     SoftAssert softAssert = new SoftAssert();
-    @BeforeClass
+    @BeforeClass(alwaysRun = true)
     public void login(){
         UserDtoLombok user = UserDtoLombok.builder()
                 .username(getProperty("login.properties", "email"))
@@ -72,10 +72,10 @@ public class AddNewCarTestsOkHttp implements BaseApi {
         try (Response response = OK_HTTP_CLIENT.newCall(request).execute()){
             System.out.println(response.isSuccessful() + " code " + response.code());
             if (response.isSuccessful()){
-                softAssert.assertEquals(response.code(),200);
+                softAssert.assertEquals(response.code(),200,"status code assert");
                 ResponseMessageDto responseMessageDto =
                         GSON.fromJson(response.body().string(), ResponseMessageDto.class);
-                softAssert.assertTrue(responseMessageDto.getMessage().equals("Car added successfully"));
+                softAssert.assertTrue(responseMessageDto.getMessage().equals("Car added successfully"),"response message assert");
                 System.out.println(responseMessageDto.toString());
                 softAssert.assertAll();
             }else {
@@ -87,7 +87,7 @@ public class AddNewCarTestsOkHttp implements BaseApi {
         }
     }
 
-    @Test
+    @Test // Status Code 400
     public void AddNewCarNegativeTest_EmptySerialNumber(){
         CarDtoApi carDtoApi = CarDtoApi.builder() // object doesn't contain serial number
                 .manufacture("Ford")
@@ -114,9 +114,9 @@ public class AddNewCarTestsOkHttp implements BaseApi {
                ErrorMessageDtoString errorMessageDtoString =
                        GSON.fromJson(response.body().string(), ErrorMessageDtoString.class);
                 System.out.println(errorMessageDtoString.toString());
-                softAssert.assertEquals(errorMessageDtoString.getStatus(),400);
-                softAssert.assertTrue(errorMessageDtoString.getError().equals("Bad Request"));
-                softAssert.assertTrue(errorMessageDtoString.getMessage().toString().contains("must not be blank"));
+                softAssert.assertEquals(errorMessageDtoString.getStatus(),400,"status code assert");
+                softAssert.assertTrue(errorMessageDtoString.getError().equals("Bad Request"),"error name assert");
+                softAssert.assertTrue(errorMessageDtoString.getMessage().toString().contains("must not be blank"),"message text assert");
                 softAssert.assertAll();
             }else {
                 ErrorMessageDtoString errorMessageDtoString =
@@ -130,7 +130,7 @@ public class AddNewCarTestsOkHttp implements BaseApi {
         }
     }
 
-    @Test
+    @Test // Status Code 400
     public void AddNewCarNegativeTest_SerialNumberAlreadyExists(){
         CarDtoApi carDtoApi = CarDtoApi.builder()
                 .serialNumber("12340923") //serial number already exists in added cars
@@ -158,9 +158,9 @@ public class AddNewCarTestsOkHttp implements BaseApi {
                 ErrorMessageDtoString errorMessageDtoString =
                         GSON.fromJson(response.body().string(), ErrorMessageDtoString.class);
                 System.out.println(errorMessageDtoString.toString());
-                softAssert.assertEquals(errorMessageDtoString.getStatus(),400);
-                softAssert.assertTrue(errorMessageDtoString.getError().equals("Bad Request"));
-                softAssert.assertTrue(errorMessageDtoString.getMessage().toString().contains("already exists"));
+                softAssert.assertEquals(errorMessageDtoString.getStatus(),400,"status code assert");
+                softAssert.assertTrue(errorMessageDtoString.getError().equals("Bad Request"),"error name assert");
+                softAssert.assertTrue(errorMessageDtoString.getMessage().toString().contains("already exists"),"message text assert");
                 softAssert.assertAll();
             }else {
                 ErrorMessageDtoString errorMessageDtoString =
@@ -174,7 +174,7 @@ public class AddNewCarTestsOkHttp implements BaseApi {
         }
     }
 
-    @Test
+    @Test // Status Code 401
     public void AddNewCarNegativeTest_InvalidToken(){
         CarDtoApi carDtoApi = CarDtoApi.builder()
                 .serialNumber("12340923")
@@ -202,9 +202,9 @@ public class AddNewCarTestsOkHttp implements BaseApi {
                 ErrorMessageDtoString errorMessageDtoString =
                         GSON.fromJson(response.body().string(), ErrorMessageDtoString.class);
                 System.out.println(errorMessageDtoString.toString());
-                softAssert.assertEquals(errorMessageDtoString.getStatus(),401);
-                softAssert.assertTrue(errorMessageDtoString.getError().equals("Unauthorized"));
-                softAssert.assertTrue(errorMessageDtoString.getMessage().toString().contains("must contain exactly"));
+                softAssert.assertEquals(errorMessageDtoString.getStatus(),401,"status code assert");
+                softAssert.assertTrue(errorMessageDtoString.getError().equals("Unauthorized"),"error name assert");
+                softAssert.assertTrue(errorMessageDtoString.getMessage().toString().contains("must contain exactly"),"message text assert");
                 softAssert.assertAll();
             }else {
                 ErrorMessageDtoString errorMessageDtoString =
@@ -219,7 +219,7 @@ public class AddNewCarTestsOkHttp implements BaseApi {
     }
 
 
-    @Test
+    @Test // Status Code 500
     public void AddNewCarNegativeTest_InvalidContentType(){
         CarDtoApi carDtoApi = CarDtoApi.builder()
                 .serialNumber("12340923")
@@ -247,9 +247,9 @@ public class AddNewCarTestsOkHttp implements BaseApi {
                 ErrorMessageDtoString errorMessageDtoString =
                         GSON.fromJson(response.body().string(), ErrorMessageDtoString.class);
                 System.out.println(errorMessageDtoString.toString());
-                softAssert.assertEquals(errorMessageDtoString.getStatus(),500);
-                softAssert.assertTrue(errorMessageDtoString.getError().equals("Internal Server Error"));
-                softAssert.assertTrue(errorMessageDtoString.getMessage().toString().contains("Content type"));
+                softAssert.assertEquals(errorMessageDtoString.getStatus(),500,"status code assert");
+                softAssert.assertTrue(errorMessageDtoString.getError().equals("Internal Server Error"),"error name assert");
+                softAssert.assertTrue(errorMessageDtoString.getMessage().toString().contains("Content type"),"message text assert");
                 softAssert.assertAll();
             }else {
                 ErrorMessageDtoString errorMessageDtoString =

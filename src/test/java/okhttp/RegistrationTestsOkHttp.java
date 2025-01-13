@@ -51,7 +51,7 @@ public class RegistrationTestsOkHttp implements BaseApi {
 
 
 
-    @Test
+    @Test // Status Code 400
     public void registrationNegativeTest_InvalidEmail(){
         UserDtoLombok user = UserDtoLombok.builder()
                 .username("bob_mail@")
@@ -76,7 +76,7 @@ public class RegistrationTestsOkHttp implements BaseApi {
     }
 
 
-    @Test
+    @Test // Status Code 500
     public void registrationNegativeTest_InvalidContentType(){
         UserDtoLombok user = UserDtoLombok.builder()
                 .username("bob_mail@mail.com")
@@ -96,9 +96,9 @@ public class RegistrationTestsOkHttp implements BaseApi {
                ErrorMessageDtoString errorMessageDtoString =
                        GSON.fromJson(response.body().string(), ErrorMessageDtoString.class);
                 System.out.println(errorMessageDtoString.toString());
-                softAssert.assertEquals(errorMessageDtoString.getStatus(),500);
-                softAssert.assertTrue(errorMessageDtoString.getError().equals("Internal Server Error"));
-                softAssert.assertTrue(errorMessageDtoString.getMessage().toString().contains("Content type"));
+                softAssert.assertEquals(errorMessageDtoString.getStatus(),500,"status code assert");
+                softAssert.assertTrue(errorMessageDtoString.getError().equals("Internal Server Error"),"error name assert");
+                softAssert.assertTrue(errorMessageDtoString.getMessage().toString().contains("Content type"),"message text assert");
                 softAssert.assertAll();
             }else {
                 ErrorMessageDtoString errorMessageDtoString =
@@ -130,7 +130,7 @@ public class RegistrationTestsOkHttp implements BaseApi {
         try (Response response = OK_HTTP_CLIENT.newCall(request).execute()){
             if(!response.isSuccessful()){
                 System.out.println(response.toString());
-               softAssert.assertEquals(response.code(),403);
+               softAssert.assertEquals(response.code(),403,"status code assert");
                softAssert.assertAll();
             }else {
                 softAssert.fail("wrong request, status code --> " + response.code());
@@ -196,9 +196,10 @@ public class RegistrationTestsOkHttp implements BaseApi {
                 ErrorMessageDtoString errorMessageDtoString =
                         GSON.fromJson(response.body().string(), ErrorMessageDtoString.class);
                 System.out.println(errorMessageDtoString.toString());
-                softAssert.assertEquals(response.code(),400);
-                softAssert.assertTrue(errorMessageDtoString.getError().equals("Bad Request"));
-                softAssert.assertTrue(errorMessageDtoString.getMessage().toString().contains("At least 8 characters"));
+                softAssert.assertEquals(response.code(),400,"status code assert");
+                softAssert.assertTrue(errorMessageDtoString.getError().equals("Bad Request"),"error name assert");
+                softAssert.assertTrue(errorMessageDtoString.getMessage().toString()
+                        .contains("At least 8 characters"),"message text assert");
 
                 softAssert.assertAll();
             }else {

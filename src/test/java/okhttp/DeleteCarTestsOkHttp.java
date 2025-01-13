@@ -60,7 +60,7 @@ public class DeleteCarTestsOkHttp implements BaseApi {
                 carsDto = GSON.fromJson(response.body().string(), CarsDto.class);
                 if (carsDto.getCars() != null && carsDto.getCars().length != 0) { // checking that an array is not null or empty
                     carDtoApi = carsDto.getCars()[0]; // getting index 0 from the array
-                    System.out.println(carDtoApi.getSerialNumber());
+                   // System.out.println(carDtoApi.getSerialNumber());
                 } else {
                     System.out.println("there's no cars to delete");
                 }
@@ -88,11 +88,11 @@ public class DeleteCarTestsOkHttp implements BaseApi {
             if (response.isSuccessful()) {
                 ResponseMessageDto responseMessageDto =
                         GSON.fromJson(response.body().string(), ResponseMessageDto.class);
-                softAssert.assertEquals(response.code(), 200);
-                softAssert.assertTrue(responseMessageDto.getMessage().equals("Car deleted successfully"));
+                softAssert.assertEquals(response.code(), 200,"status code assert");
+                softAssert.assertTrue(responseMessageDto.getMessage().equals("Car deleted successfully"),"response message assert");
                 // after deleting a car, using boolean method that calls GET request again
                 System.out.println(responseMessageDto.getMessage() + " "+ carDtoApi.getSerialNumber());
-                softAssert.assertFalse(isCarPresents(carsDto));
+                softAssert.assertFalse(isCarPresents(carsDto),"is car presents assert");
                 softAssert.assertAll();
             } else {
                 ErrorMessageDtoString errorMessageDtoString =
@@ -118,9 +118,9 @@ public class DeleteCarTestsOkHttp implements BaseApi {
             if (response.isSuccessful()) {
                 carsDto = GSON.fromJson(response.body().string(), CarsDto.class);
                 if (carsDto.getCars() != null && carsDto.getCars().length != 0) {
-                    for (CarDtoApi car : carsDto.getCars()) { // passing the array with for each, comparing serial numbers from the array with the serial number of the deleted car
+                    for (CarDtoApi car : carsDto.getCars()) { // comparing serial numbers from the array with the serial number of the deleted car
                         if (car.getSerialNumber().equals(carDtoApi.getSerialNumber())){
-                            return true; //when for each passed the array and didn't find deleted serial number, the method returns false.
+                            return true; //when didn't find deleted serial number, the method returns false.
                         }
                     }
                 } else {
@@ -138,6 +138,63 @@ public class DeleteCarTestsOkHttp implements BaseApi {
         }
         return false;
     }
+
+    @Test //Status Code 400
+    public void deleteCarNegativeTest_InvalidCarSerialNumber() {
+        Request request = new Request.Builder()
+                .url(BASE_URL + DELETE_CAR_BY_ID + "invalid serial number")
+                .addHeader(AUTHORIZATION, tokenDto.getAccessToken())
+                .delete()
+                .build();
+        try (Response response = OK_HTTP_CLIENT.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                ErrorMessageDtoString errorMessageDtoString =
+                        GSON.fromJson(response.body().string(), ErrorMessageDtoString.class );
+                System.out.println(errorMessageDtoString.toString());
+                softAssert.assertEquals(errorMessageDtoString.getStatus(),400,"status code assert");
+                softAssert.assertTrue(errorMessageDtoString.getError().equals("Bad Request"),"error name assert");
+                softAssert.assertTrue(errorMessageDtoString.getMessage().toString().contains("not found"),"message text assert");
+                softAssert.assertAll();
+            } else {
+                ErrorMessageDtoString errorMessageDtoString =
+                        GSON.fromJson(response.body().string(), ErrorMessageDtoString.class);
+                System.out.println(errorMessageDtoString.toString());
+                Assert.fail("Invalid request, status code --> " + response.code());
+            }
+
+        } catch (IOException e) {
+            Assert.fail("created exception");
+        }
+    }
+
+    @Test //Status Code 401
+    public void deleteCarNegativeTest_InvalidToken() {
+        Request request = new Request.Builder()
+                .url(BASE_URL + DELETE_CAR_BY_ID + carDtoApi.getSerialNumber())
+                .addHeader(AUTHORIZATION, "Invalid Token")
+                .delete()
+                .build();
+        try (Response response = OK_HTTP_CLIENT.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                ErrorMessageDtoString errorMessageDtoString =
+                        GSON.fromJson(response.body().string(), ErrorMessageDtoString.class );
+                System.out.println(errorMessageDtoString.toString());
+                softAssert.assertEquals(errorMessageDtoString.getStatus(),401,"status code assert");
+                softAssert.assertTrue(errorMessageDtoString.getError().equals("Unauthorized"),"error name assert");
+                softAssert.assertTrue(errorMessageDtoString.getMessage().toString().contains("JWT strings must"),"message text assert");
+                softAssert.assertAll();
+            } else {
+                ErrorMessageDtoString errorMessageDtoString =
+                        GSON.fromJson(response.body().string(), ErrorMessageDtoString.class);
+                System.out.println(errorMessageDtoString.toString());
+                Assert.fail("Invalid request, status code --> " + response.code());
+            }
+
+        } catch (IOException e) {
+            Assert.fail("created exception");
+        }
+    }
+
 
 
 
